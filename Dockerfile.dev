@@ -1,0 +1,21 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install dependencies
+COPY package*.json ./
+
+RUN npm install
+
+# Install tsx
+RUN npm install -g tsx
+
+# Copy source code
+COPY src/ ./
+COPY tsconfig.json ./
+
+# Expose port
+EXPOSE 7777
+
+# Run the TypeScript file directly
+CMD ["tsx", "watch", "server.ts"]

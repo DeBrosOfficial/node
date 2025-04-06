@@ -1,0 +1,12 @@
+node_modules/
+.env
+radata/
+dist/
+blockstore/
+orbitdb/
+swarm.key
+.DS_Store
+bin/
+blockstore-*
+logs/
+packages/

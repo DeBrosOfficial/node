@@ -1,0 +1,23 @@
+services:
+  debros-node-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - '7777:7777'
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - ./orbitdb:/app/orbitdb
+      - ./blockstore:/app/blockstore
+      - ./.env:/app/.env
+      - ./terms-agreement:/app/terms-agreement
+    environment:
+      - PORT=7777
+      # Add other environment variables if needed
+    networks:
+      - debros-network
+
+networks:
+  debros-network:
+    driver: bridge

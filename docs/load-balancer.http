@@ -1,0 +1,43 @@
+### Load Balancer and Service Discovery API
+
+@baseUrl = http://localhost:7777/api
+@contentType = application/json
+
+### Get Node Info
+# Returns information about the current node
+GET {{baseUrl}}/discovery/node-info
+Content-Type: {{contentType}}
+
+### Get Optimal Peer
+# Returns the optimal peer to connect to based on the load balancing strategy
+GET {{baseUrl}}/discovery/optimal-peer
+Content-Type: {{contentType}}
+
+### Get All Peers
+# Returns information about all connected peers
+GET {{baseUrl}}/discovery/peers
+Content-Type: {{contentType}}
+
+### Health Check
+# Check the health of the node and its load metrics
+GET http://localhost:7777/health
+Content-Type: {{contentType}}
+
+### Multi-Node Testing Setup
+
+## Use these commands to start multiple nodes for testing load balancing
+
+# Start first node
+# FINGERPRINT=node-1 PORT=7777 pnpm run dev
+
+# Start second node 
+# FINGERPRINT=node-2 PORT=6002 pnpm run dev
+
+# Start third node
+# FINGERPRINT=node-3 PORT=6003 pnpm run dev
+
+## Test optimal peer with second node
+# GET http://localhost:6002/api/discovery/optimal-peer
+
+## Test optimal peer with third node
+# GET http://localhost:6003/api/discovery/optimal-peer
