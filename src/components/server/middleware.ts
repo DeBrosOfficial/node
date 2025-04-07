@@ -10,7 +10,6 @@ export const applyMiddleware = (app: express.Application) => {
   app.use(
     cors({
       origin: (origin, callback) => {
-        // Allow requests from your frontend in development
         const allowedOrigins = ['http://localhost:4001'];
         if (!origin || allowedOrigins.includes(origin)) {
           callback(null, true);
@@ -20,7 +19,7 @@ export const applyMiddleware = (app: express.Application) => {
       },
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       allowedHeaders: '*',
-      credentials: true, // Enable credentials
+      credentials: true,
     })
   );
 
@@ -31,7 +30,7 @@ export const applyMiddleware = (app: express.Application) => {
   // JSON parser middleware
   app.use(express.json());
 
-  // Error handling middleware
+  // Error handling middleware (must come after other middleware/routes)
   app.use(errorHandlingMiddleware);
 };
 
@@ -73,12 +72,18 @@ export const loggingMiddleware = (req: express.Request, res: express.Response, n
 /**
  * Global error handling middleware
  */
-export const errorHandlingMiddleware = (err: any, req: express.Request, res: express.Response) => {
-  console.error('Unhandled error:', err);
-  res.status(err.status || 500).json({
+export const errorHandlingMiddleware = (
+  err: any,
+  _req: express.Request,
+  res: express.Response,
+  _next: express.NextFunction // Add the 'next' parameter
+) => {
+  console.error(err.stack);
+  res.status(500).json({
     error: {
       message: 'An unexpected error occurred',
       detail: process.env.NODE_ENV === 'development' ? err.message : undefined,
     },
   });
+  // Optionally call next(err) if you want to pass the error to another handler
 };
