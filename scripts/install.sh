@@ -35,12 +35,28 @@ if ! command -v docker &> /dev/null; then
     log "${CYAN}Docker not found. Installing Docker...${NOCOLOR}"
     sudo apt-get update
     sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+    # Detect OS and set Docker repository
+    . /etc/os-release
+    if [ "$ID" = "ubuntu" ]; then
+        OS_TYPE="ubuntu"
+        REPO_URL="https://download.docker.com/linux/ubuntu"
+        CODENAME=$(lsb_release -cs)
+    elif [ "$ID" = "debian" ] || [ "$ID" = "raspbian" ]; then
+        OS_TYPE="debian"
+        REPO_URL="https://download.docker.com/linux/debian"
+        CODENAME=$(lsb_release -cs)  # e.g., "bookworm" for Debian 12 or Raspberry Pi OS
+    else
+        log "${RED}Error: Unsupported OS ($ID). This script supports Ubuntu, Debian, or Raspberry Pi OS.${NOCOLOR}"
+        exit 1
+    fi
+
+    curl -fsSL "$REPO_URL/gpg" | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] $REPO_URL $CODENAME stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
     sudo apt-get update
     sudo apt-get install -y docker-ce docker-ce-cli containerd.io
     sudo usermod -aG docker $USER
-    log "${GREEN}Docker installed successfully.${NOCOLOR}"
+    log "${GREEN}Docker installed successfully on $OS_TYPE ($CODENAME).${NOCOLOR}"
 else
     DOCKER_VERSION=$(docker --version | awk '{print $3}' | sed 's/,//')
     if [ "$(printf '%s\n' "$MIN_DOCKER_VERSION" "$DOCKER_VERSION" | sort -V | head -n1)" != "$MIN_DOCKER_VERSION" ]; then
