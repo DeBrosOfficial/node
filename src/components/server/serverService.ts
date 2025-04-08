@@ -1,6 +1,6 @@
 import express from 'express';
 import { createServer } from 'http';
-import { initIpfs, stopIpfs, initOrbitDB, createServiceLogger, logPeersStatus } from '@debros/network'; // Import from the new package
+import network, { createServiceLogger, logPeersStatus } from '@debros/network'; // Import from the new package
 import mainRouter from '../../routes/api';
 import { applyMiddleware } from './middleware';
 import { registerHealthEndpoints, startStatusReporting } from './healthService';
@@ -34,10 +34,9 @@ export const startServer = async () => {
     anonInstance = anon;
 
     // Initialize IPFS with the new package
-    await initIpfs();
 
     // Initialize OrbitDB with the new package
-    orbitdbInstance = await initOrbitDB();
+    orbitdbInstance = await network.db.init()
 
     // Create and configure Express app
     const app = createApp();
@@ -103,15 +102,10 @@ function setupShutdownHandler(
     clearInterval(intervals.statusReportInterval);
     clearInterval(intervals.peerStatusInterval);
 
-    // Stop OrbitDB
-    serverLogger.info('Stopping OrbitDB...');
-    await orbitdbInstance.stop();
-    serverLogger.info('OrbitDB stopped.');
-
     // Stop IPFS
-    serverLogger.info('Stopping IPFS...');
-    await stopIpfs();
-    serverLogger.info('IPFS stopped.');
+    serverLogger.info('Stopping Network...');
+    await network.db.stop();
+    serverLogger.info('Network stopped.');
 
     // Stop Anyone
     if (anonInstance) {

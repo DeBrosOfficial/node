@@ -9,7 +9,7 @@ export const registerHealthEndpoints = (app: express.Application) => {
   // Health check endpoint that also reports node load and peers
   app.get('/health', (req, res) => {
     const connectedPeers = getConnectedPeers();
-    const peerCount = connectedPeers.length;
+    const peerCount = connectedPeers.size;
 
     res.json({
       status: 'healthy',
@@ -28,7 +28,7 @@ export const startStatusReporting = (interval = 600000) => {
   // Schedule a status report every 10 minutes
   return setInterval(() => {
     const connectedPeers = getConnectedPeers();
-    const peerCount = connectedPeers.length;
+    const peerCount = connectedPeers.size;
 
     console.log('==== DEBROS STATUS REPORT ====');
     console.log(`📊 Fingerprint: ${config.env.fingerprint}`);
