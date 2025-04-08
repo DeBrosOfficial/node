@@ -415,6 +415,12 @@ log "${BLUE}==================================================${NOCOLOR}"
 log "${GREEN}Installation directory: ${NOCOLOR}${CYAN}$INSTALL_DIR${NOCOLOR}"
 log "${BLUE}==================================================${NOCOLOR}"
 
+log "${BLUE}==================================================${NOCOLOR}"
+log "${GREEN}Installation Notes:${NOCOLOR}"
+log "${CYAN}If you were prompted to reboot earlier (e.g., for Raspberry Pi cgroups),${NOCOLOR}"
+log "${CYAN}please rerun this script after rebooting to finish the installation.${NOCOLOR}"
+log "${BLUE}==================================================${NOCOLOR}"
+
 # Information about the DeBros CLI
 log "${BLUE}==================================================${NOCOLOR}"
 log "${GREEN}DeBros CLI Information:${NOCOLOR}"
