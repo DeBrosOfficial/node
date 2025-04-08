@@ -193,7 +193,7 @@ else
         log "${GREEN}Firewall configuration completed.${NOCOLOR}"
     fi
     
-    KEY_DIR="/var/lib/debros/keys"
+    KEY_DIR="/opt/debros/keys"
     KEY_NAME="debros_key"
     if [ ! -d "$KEY_DIR" ]; then
         log "${CYAN}Creating folder $KEY_DIR...${NOCOLOR}"
