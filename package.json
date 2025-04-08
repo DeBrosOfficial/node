@@ -1,7 +1,7 @@
 {
   "name": "@debros/node",
   "type": "module",
-  "version": "0.0.12-alpha",
+  "version": "0.0.13-alpha",
   "description": "DeBros Node",
   "main": "dist/index.js",
   "bin": "dist/cli.js",
