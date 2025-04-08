@@ -14,6 +14,7 @@ services:
       - ./.env:/app/.env
       - ./terms-agreement:/app/terms-agreement
       - /var/lib/debros/keys:/var/lib/debros/keys
+      - ./logs:/app/logs
     environment:
       - PORT=7777
     networks:
