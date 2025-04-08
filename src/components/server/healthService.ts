@@ -42,7 +42,7 @@ export const startStatusReporting = (interval = 600000) => {
       console.log('CONNECTED PEERS:');
       connectedPeers.forEach((peer, i) => {
         // Adjust based on your peer structure from the new @debros/network
-        const peerId = peer.id || peer.toString();
+        const peerId = peer.fingerprint || peer.toString();
         const load = peer.load || 'unknown';
         console.log(`${i + 1}. ${peerId.substring(0, 15)}... - Load: ${load}%`);
       });

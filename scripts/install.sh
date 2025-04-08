@@ -422,7 +422,6 @@ log "${CYAN}please rerun this script after rebooting to finish the installation.
 log "${BLUE}==================================================${NOCOLOR}"
 
 # Information about the DeBros CLI
-log "${BLUE}==================================================${NOCOLOR}"
 log "${GREEN}DeBros CLI Information:${NOCOLOR}"
 log "${CYAN}The DeBros CLI is a tool that runs on your local development machine,${NOCOLOR}"
 log "${CYAN}not on the node itself. To install it on your development machine, run:${NOCOLOR}"
