@@ -17,7 +17,7 @@
     ]
   },
   "scripts": {
-    "dev": "npx tsx ./src/server.ts",
+    "dev": "./scripts/start-dev.sh",
     "dev:with-anyone": "npx tsx ./src/server.ts",
     "start": "NODE_ENV=production node dist/server.js",
     "lint": "npx eslint src",

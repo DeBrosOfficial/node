@@ -10,11 +10,13 @@ services:
     volumes:
       - ./orbitdb:/app/orbitdb
       - ./blockstore:/app/blockstore
+      - ./keys:/app/keys
       - ./.env:/app/.env
       - ./terms-agreement:/app/terms-agreement
       - ./logs:/app/logs
     environment:
       - PORT=7777
+      - NODE_ENV=development
       # Add other environment variables if needed
     networks:
       - debros-network

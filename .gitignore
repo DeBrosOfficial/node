@@ -4,6 +4,7 @@ radata/
 dist/
 blockstore/
 orbitdb/
+keys/
 swarm.key
 .DS_Store
 bin/
