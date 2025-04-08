@@ -229,7 +229,7 @@ HEARTBEAT_INTERVAL=5000
 STALE_PEER_TIMEOUT=30000
 PEER_LOG_INTERVAL=60000
 NODE_PUBLIC_ADDRESS=$IP_ADDRESS
-BOOTSTRAP_NODES=/ip4/188.166.113.190/tcp/7778/p2p/12D3KooWNWgs4WAUmE4CsxrL6uuyv1yuTzcRReMe5r7Psemsg2Z9,/ip4/82.208.21.140/tcp/7778/p2p/12D3KooWPUdpNX5N6dsuFAvgwfBMXUoFK2QS5sh8NpjxbfGpkSCi
+BOOTSTRAP_NODES=/ip4/82.208.21.140/tcp/7778/p2p/12D3KooWEkDYrHtBJRELs2JsHdYfQfGYD4HbQoLKhQVyjkZuHQUG,/ip4/38.242.250.186/tcp/7778/p2p/12D3KooWKR6XR7TrgS4sBw8GdYikTTocF2n2zNz2sg3KujW5C97X
 MAX_CONNECTIONS=1000
 LOAD_BALANCING_STRATEGY=least-loaded
 ACCEPT_TERMS=true
@@ -268,6 +268,62 @@ EOF
         sudo systemctl enable debros.service
     fi
 fi
+
+# Check if running on Raspberry Pi and enable cgroups if needed
+check_and_enable_cgroups() {
+    # Detect Raspberry Pi by checking /proc/cpuinfo
+    if grep -q "Raspberry Pi" /proc/cpuinfo 2>/dev/null; then
+        log "${CYAN}Detected Raspberry Pi hardware.${NOCOLOR}"
+        
+        # Check if cmdline.txt exists in either location
+        CMDLINE_FILE=""
+        if [ -f "/boot/firmware/cmdline.txt" ]; then
+            CMDLINE_FILE="/boot/firmware/cmdline.txt"
+        elif [ -f "/boot/cmdline.txt" ]; then
+            CMDLINE_FILE="/boot/cmdline.txt"
+        else
+            log "${RED}Error: Could not locate cmdline.txt for Raspberry Pi.${NOCOLOR}"
+            exit 1
+        fi
+
+        # Check if cgroups are already enabled
+        if ! grep -q "cgroup_enable=memory" "$CMDLINE_FILE" || ! grep -q "cgroup_memory=1" "$CMDLINE_FILE"; then
+            log "${YELLOW}Memory cgroups not enabled. Updating $CMDLINE_FILE...${NOCOLOR}"
+            
+            # Backup the original cmdline.txt
+            sudo cp "$CMDLINE_FILE" "$CMDLINE_FILE.backup" || {
+                log "${RED}Failed to backup $CMDLINE_FILE${NOCOLOR}"
+                exit 1
+            }
+            
+            # Append cgroup parameters if not present
+            CURRENT_CMDLINE=$(cat "$CMDLINE_FILE")
+            NEW_CMDLINE="$CURRENT_CMDLINE cgroup_enable=memory cgroup_memory=1"
+            echo "$NEW_CMDLINE" | sudo tee "$CMDLINE_FILE" > /dev/null || {
+                log "${RED}Failed to update $CMDLINE_FILE${NOCOLOR}"
+                exit 1
+            }
+            
+            log "${GREEN}Updated $CMDLINE_FILE with cgroup settings.${NOCOLOR}"
+            log "${YELLOW}A reboot is required to apply these changes.${NOCOLOR}"
+            
+            read -rp "Reboot now? (yes/no) [Default: yes]: " REBOOT_CHOICE
+            REBOOT_CHOICE="${REBOOT_CHOICE:-yes}"
+            if [[ "$REBOOT_CHOICE" == "yes" ]]; then
+                log "${CYAN}Rebooting system...${NOCOLOR}"
+                sudo reboot
+            else
+                log "${CYAN}Please reboot manually to apply changes before continuing.${NOCOLOR}"
+                exit 0
+            fi
+        else
+            log "${GREEN}Memory cgroups already enabled in $CMDLINE_FILE.${NOCOLOR}"
+        fi
+    fi
+}
+
+# Call the function before K3s installation
+check_and_enable_cgroups
 
 # Ask about K3s installation
 if ! command -v k3s &> /dev/null; then
