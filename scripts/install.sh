@@ -175,16 +175,22 @@ else
             sudo apt-get install -y ufw
         fi
         
-        log "${GREEN}Configuring firewall...${NOCOLOR}"
+        # Capture the initial state of ufw
+        UFW_INITIAL_STATUS=$(sudo ufw status | grep -o "Status: [a-z]*" | awk '{print $2}')
+        
+        log "${GREEN}Configuring firewall rules...${NOCOLOR}"
         sudo ufw allow 7777
         sudo ufw allow 7778
         
-        if [[ $(sudo ufw status) =~ "inactive" ]]; then
-            log "${GREEN}Enabling firewall...${NOCOLOR}"
+        # Only enable ufw if it was already active
+        if [[ "$UFW_INITIAL_STATUS" == "active" ]]; then
+            log "${GREEN}Ensuring firewall remains enabled...${NOCOLOR}"
             echo "y" | sudo ufw enable
+        else
+            log "${GREEN}Firewall rules added, but not enabling UFW as it was initially inactive.${NOCOLOR}"
         fi
         
-        log "${GREEN}Firewall configured successfully.${NOCOLOR}"
+        log "${GREEN}Firewall configuration completed.${NOCOLOR}"
     fi
     
     KEY_DIR="/var/lib/debros/keys"
