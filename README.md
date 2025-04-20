@@ -1,3 +1,9 @@
+# Important Update: DeBros Has Moved!
+
+All activity for this project has relocated from this GitHub repository to our new home at https://git.debros.io/DeBros/node.
+
+This repository will remain available for reference but will no longer receive updates.
+
 # Installation
 
 ## Production Installation
